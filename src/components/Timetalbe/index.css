@@ -8,5 +8,6 @@
   background: rgb(245, 245, 245);
 }
 .timetable thead th.ant-table-cell {
-  white-space: nowrap !important;
+  white-space: pre-line !important;
+  background-color: white;
 }

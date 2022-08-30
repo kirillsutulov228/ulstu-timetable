@@ -19,7 +19,7 @@ function getSheduleWeek(date = new Date()) {
 }
 
 function findIncludesInArray(value, arr) {
-  return arr.filter((group) => group.toLowerCase().includes(value.toLowerCase())).map((value) => ({ value }));
+  return arr.filter((group) => group.toLowerCase().trim().includes(value.toLowerCase().trim())).map((value) => ({ value }));
 }
 
 function App() {

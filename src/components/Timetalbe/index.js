@@ -2,49 +2,6 @@ import './index.css';
 import Table from 'antd/lib/table/Table.js';
 import { useState, useEffect } from 'react';
 
-const initialColumns = [
-  {
-    title: '',
-    dataIndex: 'time',
-    key: 'time',
-    fixed: 'left',
-  },
-  {
-    title: 'Понедельник',
-    dataIndex: 'day0',
-    key: 'day0'
-  },
-  {
-    title: 'Вторник',
-    dataIndex: 'day1',
-    key: 'day1'
-  },
-  {
-    title: 'Среда',
-    dataIndex: 'day2',
-    key: 'day2'
-  },
-  {
-    title: 'Четверг',
-    dataIndex: 'day3',
-    key: 'day3'
-  },
-  {
-    title: 'Пятница',
-    dataIndex: 'day4',
-    key: 'day4'
-  },
-  {
-    title: 'Суббота',
-    dataIndex: 'day5',
-    key: 'day5'
-  }
-];
-
-/* [
-  [h1, m1, h2, m2]
-]
-*/
 const lessonsTimes = [
   [8, 30, 9, 50],
   [10, 0, 11, 20],
@@ -55,6 +12,23 @@ const lessonsTimes = [
   [18, 0, 19, 20],
   [19, 30, 20, 50]
 ];
+
+const _initialColumns = [
+  {
+    title: '',
+    dataIndex: 'day',
+    key: 'day',
+    fixed: 'left'
+  }
+];
+
+lessonsTimes.forEach((v, i) =>
+  _initialColumns.push({
+    title: `${i + 1}-я пара \n ${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}`,
+    dataIndex: `lesson${i}`,
+    key: `lesson${i}`
+  })
+);
 
 function dateBetween(date, h1, m1, h2, m2) {
   const h = date.getHours();
@@ -70,31 +44,45 @@ function formatTime(h1, m1) {
 }
 
 export default function Timetable({ schedule, title, showBg, ...props }) {
-  const [columns, setColumns] = useState(initialColumns);
+  const [columns, setColumns] = useState(_initialColumns);
 
-  const dataSource = lessonsTimes.map((v, i) => ({
-    time: `${i + 1}-я пара \n ${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}`,
-    key: i
-  }));
+  const _dataSource = [
+    { day: 'Понедельник' },
+    { day: 'Вторник' },
+    { day: 'Среда' },
+    { day: 'Четверг' },
+    { day: 'Пятница' },
+    { day: 'Суббота' }
+  ];
 
+  schedule.forEach((day, dayIndex) => {
+    day.lessons.forEach((lesson, lessonIndex) => {
+      _dataSource[dayIndex]['lesson' + lessonIndex] =
+        lesson.length === 0
+          ? '-'
+          : lesson.map((v) => v.group + '\n' + v.nameOfLesson + '\n' + v.teacher + '\n' + v.room).join('\n');
+    });
+  });
+  
   useEffect(() => {
     function updateBg() {
-      const newColumns = JSON.parse(JSON.stringify(initialColumns));
-      newColumns.forEach((col, i) => {
+      const newColumns = JSON.parse(JSON.stringify(_initialColumns));
+      newColumns.forEach((col, colIndex) => {
         const date = new Date();
         const timeOffset = -240;
         date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000);
         col.onCell = (_, rowIndex) => {
           if (!showBg) return;
-          let isCurrentDay = col.dataIndex === 'day' + (date.getDay() - 1);
+          let isCurrentDay = rowIndex === date.getDay() - 1;
           let isCurrentLesson =
             isCurrentDay &&
+            colIndex &&
             dateBetween(
               date,
-              lessonsTimes[rowIndex][0],
-              lessonsTimes[rowIndex][1],
-              lessonsTimes[rowIndex][2],
-              lessonsTimes[rowIndex][3]
+              lessonsTimes[colIndex - 1][0],
+              lessonsTimes[colIndex - 1][1],
+              lessonsTimes[colIndex - 1][2],
+              lessonsTimes[colIndex - 1][3]
             );
           return {
             className: isCurrentLesson ? 'current' : isCurrentDay ? 'today' : undefined
@@ -102,7 +90,13 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
         };
         col.render = (text) => (
           <div
-            style={{ whiteSpace: 'pre-line', minWidth: '110px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}
+            style={{
+              whiteSpace: 'pre-line',
+              wordBreak: "break-word",
+              minWidth: '100px',
+              maxWidth: '180px',
+              fontWeight: colIndex === 0 ? '500' : '400',
+            }}
           >
             {text}
           </div>
@@ -111,18 +105,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       setColumns(newColumns);
     }
     updateBg();
-    const interval = setInterval(updateBg, 60000);
-    return () => clearInterval(interval);
   }, [showBg]);
-
-  schedule.forEach((day, dayIndex) => {
-    day.lessons.forEach((lesson, lessonIndex) => {
-      dataSource[lessonIndex]['day' + dayIndex] =
-        lesson.length === 0
-          ? '-'
-          : lesson.map((v) => v.group + '\n' + v.nameOfLesson + '\n' + v.teacher + '\n' + v.room).join('\n');
-    });
-  });
 
   return (
     <Table
@@ -130,10 +113,11 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       scroll={{ x: true }}
       pagination={false}
       sticky
-      title={() => <h3 style={{ margin: 0,  whiteSpace: 'nowrap' }}>{title}</h3>}
+      title={() => <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{title}</h3>}
       columns={columns}
-      dataSource={dataSource}
+      dataSource={_dataSource}
       bordered
+      rowKey={"day"}
       className='timetable'
       {...props}
     />
