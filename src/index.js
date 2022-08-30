@@ -89,8 +89,9 @@ function App() {
         {schedule && !error && (
           <div className='timetable-wrapper'>
             <h2 style={{ margin: '20px 0' }}>Расписание группы {selectedGroup}</h2>
-            <Timetable style={{ margin: '20px 0' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
-            <Timetable style={{ margin: '20px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
+            <Timetable style={{ margin: '20px 0 40px' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
+            <hr/>
+            <Timetable style={{ margin: '40px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
           </div>
         )}
         {error && (

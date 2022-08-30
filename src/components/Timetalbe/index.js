@@ -4,7 +4,7 @@ import { Fragment, useState, useEffect } from 'react';
 
 const initialColumns = [
   {
-    title: 'Время',
+    title: '',
     dataIndex: 'time',
     key: 'time',
     fixed: 'left'
@@ -73,7 +73,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
   const [columns, setColumns] = useState(initialColumns);
 
   const dataSource = lessonsTimes.map((v, i) => ({
-    time: `${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}<br/>${i + 1}-я пара`,
+    time: `${i + 1}-я пара<br/>${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}`,
     key: i
   }));
 
@@ -101,7 +101,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
           };
         };
         col.render = (text) => (
-          <div style={{ minWidth: '80px', maxWidth: '200px' }}>
+          <div style={{ minWidth: '80px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}>
             {text.split('<br/>').map((v, i) => (
               <Fragment key={i}>
                 {v}
