@@ -10,32 +10,32 @@ const initialColumns = [
     fixed: 'left'
   },
   {
-    title: 'Пнд',
+    title: 'Понедельник',
     dataIndex: 'day0',
     key: 'day0'
   },
   {
-    title: 'Втр',
+    title: 'Вторник',
     dataIndex: 'day1',
     key: 'day1'
   },
   {
-    title: 'Срд',
+    title: 'Среда',
     dataIndex: 'day2',
     key: 'day2'
   },
   {
-    title: 'Чтв',
+    title: 'Четверг',
     dataIndex: 'day3',
     key: 'day3'
   },
   {
-    title: 'Птн',
+    title: 'Пятница',
     dataIndex: 'day4',
     key: 'day4'
   },
   {
-    title: 'Сбт',
+    title: 'Суббота',
     dataIndex: 'day5',
     key: 'day5'
   }

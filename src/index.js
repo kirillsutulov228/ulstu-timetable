@@ -96,12 +96,12 @@ function App() {
     localStorage.setItem('selectedValue', selectedValue);
     localStorage.setItem('saveSelect', saveSelect);
   }, [selectedValue, saveSelect]);
-  console.log({ selectedValue, saveSelect });
+
   return (
     <div className='app'>
       <div className='container'>
         <h1 className='title'>
-          УлГТУ расписание
+          Расписание УлГТУ
           <span>Сейчас {week}-ая неделя</span>
         </h1>
         <AutocompleteInput
