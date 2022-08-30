@@ -17,9 +17,14 @@ function getSheduleWeek(date = new Date()) {
   return weekNr % 2 ? 2 : 1;
 }
 
+function findIncludesInArray(value, arr) {
+  return arr.filter((group) => group.toLowerCase().includes(value.toLowerCase())).map((value) => ({ value }));
+}
+
 function App() {
-  const [selectedGroup, setSelectedGroup] = useState();
+  const [selectedValue, setselectedValue] = useState();
   const [allGroups, setAllGroups] = useState();
+  const [allTeachers, setAllTeachers] = useState();
   const [error, setError] = useState();
   const [schedule, setShedule] = useState();
   const [loading, setLoading] = useState(false);
@@ -29,8 +34,10 @@ function App() {
     async function loadGroups() {
       try {
         setLoading(true);
-        const response = await axios.get('https://time.ulstu.ru/api/1.0/groups');
-        setAllGroups(response.data.response);
+        const groupResponse = await axios.get('https://time.ulstu.ru/api/1.0/groups');
+        const teachersResponse = await axios.get('https://time.ulstu.ru/api/1.0/teachers');
+        setAllGroups(groupResponse.data.response);
+        setAllTeachers(teachersResponse.data.response);
       } catch (err) {
         console.log(err);
         setError({ message: 'Ошибка', description: 'Не удалось загрузить список групп' });
@@ -43,12 +50,12 @@ function App() {
 
   useEffect(() => {
     async function loadTimetable() {
-      if (selectedGroup) {
+      if (selectedValue) {
         try {
           setLoading(true);
           setShedule(null);
           await new Promise((r) => setTimeout(r, 450));
-          const response = await axios.get(`https://time.ulstu.ru/api/1.0/timetable?filter=${selectedGroup}`);
+          const response = await axios.get(`https://time.ulstu.ru/api/1.0/timetable?filter=${selectedValue}`);
           setShedule(response.data.response.weeks);
         } catch (err) {
           setShedule(null);
@@ -59,15 +66,17 @@ function App() {
       }
     }
     loadTimetable();
-  }, [selectedGroup]);
+  }, [selectedValue]);
 
   async function searchGroupOptions(value, setOptions) {
+    let options = []
     if (allGroups) {
-      const options = allGroups
-        .filter((group) => group.toLowerCase().includes(value.toLowerCase()))
-        .map((value) => ({ value }));
-      setOptions(options);
+      options = options.concat(findIncludesInArray(value, allGroups));
     }
+    if (allTeachers) {
+      options = options.concat(findIncludesInArray(value, allTeachers));
+    }
+    setOptions(options);
   }
 
   return (
@@ -78,19 +87,23 @@ function App() {
           <span>Сейчас {week}-ая неделя</span>
         </h1>
         <AutocompleteInput
-          placeholder='Введите название группы'
+          placeholder='Введите название группы или имя преподавтеля'
           notFoundContent='Ничего не найдено'
           maxOptions='999'
-          onSelect={setSelectedGroup}
+          onSelect={setselectedValue}
           onSearch={searchGroupOptions}
           style={{ width: '100%' }}
         />
         {loading && <Loader style={{ margin: '40px auto' }} />}
         {schedule && !error && (
           <div className='timetable-wrapper'>
-            <h2 style={{ margin: '20px 0' }}>Расписание группы {selectedGroup}</h2>
-            <Timetable style={{ margin: '20px 0 60px' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
-            <Timetable style={{ margin: '60px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
+            <Timetable
+              style={{ margin: '40px 0' }}
+              showBg={week === 1}
+              schedule={schedule[0].days}
+              title='Неделя 1'
+            />
+            <Timetable style={{ margin: '50px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
           </div>
         )}
         {error && (
