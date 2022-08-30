@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ulstu-timetable/static/css/main.fcaee4f8.css",
+    "main.css": "/ulstu-timetable/static/css/main.2a306112.css",
     "main.js": "/ulstu-timetable/static/js/main.f3eddf45.js",
     "static/js/787.0c3f432a.chunk.js": "/ulstu-timetable/static/js/787.0c3f432a.chunk.js",
     "index.html": "/ulstu-timetable/index.html",
-    "main.fcaee4f8.css.map": "/ulstu-timetable/static/css/main.fcaee4f8.css.map",
+    "main.2a306112.css.map": "/ulstu-timetable/static/css/main.2a306112.css.map",
     "main.f3eddf45.js.map": "/ulstu-timetable/static/js/main.f3eddf45.js.map",
     "787.0c3f432a.chunk.js.map": "/ulstu-timetable/static/js/787.0c3f432a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fcaee4f8.css",
+    "static/css/main.2a306112.css",
     "static/js/main.f3eddf45.js"
   ]
 }
