@@ -17,7 +17,7 @@ const _initialColumns = [
   {
     title: '',
     dataIndex: 'day',
-    key: 'day',
+    key: 'day'
   }
 ];
 
@@ -62,7 +62,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
           : lesson.map((v) => v.group + '\n' + v.nameOfLesson + '\n' + v.teacher + '\n' + v.room).join('\n');
     });
   });
-  
+
   useEffect(() => {
     function updateBg() {
       const newColumns = JSON.parse(JSON.stringify(_initialColumns));
@@ -91,9 +91,9 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
           <div
             style={{
               whiteSpace: 'pre-line',
-              minWidth: '70px',
+              minWidth: '78px',
               maxWidth: '120px',
-              fontWeight: colIndex === 0 ? '500' : '400',
+              fontWeight: colIndex === 0 ? '500' : '400'
             }}
           >
             {text}
@@ -103,6 +103,8 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       setColumns(newColumns);
     }
     updateBg();
+    const interval = setInterval(updateBg, 60000);
+    return () => clearInterval(interval);
   }, [showBg]);
 
   return (
@@ -115,7 +117,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       columns={columns}
       dataSource={_dataSource}
       bordered
-      rowKey={"day"}
+      rowKey={'day'}
       className='timetable'
       {...props}
     />

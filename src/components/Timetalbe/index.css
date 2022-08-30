@@ -9,5 +9,6 @@
 }
 .timetable thead th.ant-table-cell {
   white-space: pre-line !important;
+  word-break: keep-all;
   background-color: white;
 }
