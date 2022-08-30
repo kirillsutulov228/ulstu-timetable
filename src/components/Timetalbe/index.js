@@ -73,7 +73,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
   const [columns, setColumns] = useState(initialColumns);
 
   const dataSource = lessonsTimes.map((v, i) => ({
-    time: `${i + 1}-я пара<br/>${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}`,
+    time: `${i + 1}-я пара \n ${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}`,
     key: i
   }));
 
@@ -82,7 +82,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       const newColumns = JSON.parse(JSON.stringify(initialColumns));
       newColumns.forEach((col, i) => {
         const date = new Date();
-        const timeOffset = -240
+        const timeOffset = -240;
         date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000);
         col.onCell = (_, rowIndex) => {
           if (!showBg) return;
@@ -101,13 +101,10 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
           };
         };
         col.render = (text) => (
-          <div style={{ minWidth: '80px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}>
-            {text.split('<br/>').map((v, i) => (
-              <Fragment key={i}>
-                {v}
-                <br />
-              </Fragment>
-            ))}
+          <div
+            style={{ whiteSpace: 'pre-line', minWidth: '80px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}
+          >
+            {text}
           </div>
         );
       });
@@ -118,15 +115,12 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
     return () => clearInterval(interval);
   }, [showBg]);
 
- 
   schedule.forEach((day, dayIndex) => {
     day.lessons.forEach((lesson, lessonIndex) => {
       dataSource[lessonIndex]['day' + dayIndex] =
         lesson.length === 0
           ? '-'
-          : lesson
-              .map((v) => v.group + '<br/>' + v.nameOfLesson + '<br/>' + v.teacher + '<br/>' + v.room)
-              .join('<br/>');
+          : lesson.map((v) => v.group + '\n' + v.nameOfLesson + '\n' + v.teacher + '\n' + v.room).join('\n');
     });
   });
 
