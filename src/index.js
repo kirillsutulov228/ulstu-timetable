@@ -10,12 +10,20 @@ import './index.css';
 import 'antd/dist/antd.css';
 import Loader from './components/Loader/index';
 
+function getSheduleWeek(date = new Date()) {
+  const firstJanuary = new Date(date.getFullYear(), 0, 1);
+  const dayNr = Math.ceil((date - firstJanuary) / (24 * 60 * 60 * 1000));
+  const weekNr = Math.ceil((dayNr + firstJanuary.getDay()) / 7);
+  return weekNr % 2 ? 2 : 1;
+}
+
 function App() {
   const [selectedGroup, setSelectedGroup] = useState();
   const [allGroups, setAllGroups] = useState();
   const [error, setError] = useState();
   const [schedule, setShedule] = useState();
   const [loading, setLoading] = useState(false);
+  const [week, setWeek] = useState(getSheduleWeek());
 
   useEffect(() => {
     async function loadGroups() {
@@ -65,7 +73,10 @@ function App() {
   return (
     <div className='app'>
       <div className='container'>
-        <h1>УлГТУ расписание</h1>
+        <h1 className='title'>
+          УлГТУ расписание
+          <span>Сейчас {week}-ая неделя</span>
+        </h1>
         <AutocompleteInput
           placeholder='Введите название группы'
           notFoundContent='Ничего не найдено'
@@ -78,8 +89,8 @@ function App() {
         {schedule && !error && (
           <div className='timetable-wrapper'>
             <h2 style={{ margin: '20px 0' }}>Расписание группы {selectedGroup}</h2>
-            <Timetable style={{ margin: '20px 0' }} schedule={schedule[0].days} title='Неделя 1' />
-            <Timetable style={{ margin: '20px 0' }} schedule={schedule[1].days} title='Неделя 2' />
+            <Timetable style={{ margin: '20px 0' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
+            <Timetable style={{ margin: '20px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
           </div>
         )}
         {error && (
@@ -93,9 +104,9 @@ function App() {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  //<React.StrictMode>
+  <React.StrictMode>
     <App />
-  //</React.StrictMode>
+  </React.StrictMode>
 );
 
 reportWebVitals();

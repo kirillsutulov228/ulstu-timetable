@@ -21,3 +21,12 @@ code {
   margin: 0 auto;
   padding: 0 20px;
 }
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.title > span {
+  font-size: 0.5em;
+  font-weight: normal;
+}

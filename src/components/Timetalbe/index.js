@@ -69,7 +69,7 @@ function formatTime(h1, m1) {
   return date.toLocaleTimeString().substring(0, 5);
 }
 
-export default function Timetable({ schedule, title, ...props }) {
+export default function Timetable({ schedule, title, showBg, ...props }) {
   const [columns, setColumns] = useState(initialColumns);
 
   const dataSource = lessonsTimes.map((v, i) => ({
@@ -85,7 +85,8 @@ export default function Timetable({ schedule, title, ...props }) {
         const timeOffset = -240
         date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000);
         col.onCell = (_, rowIndex) => {
-          let isCurrentDay = col.dataIndex === 'day' + date.getDay();
+          if (!showBg) return;
+          let isCurrentDay = col.dataIndex === 'day' + (date.getDay() - 1);
           let isCurrentLesson =
             isCurrentDay &&
             dateBetween(
