@@ -1,17 +1,101 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import AutocompleteInput from './components/AutocompleteInput/index.js';
+import axios from 'axios';
+import Alert from 'antd/lib/alert/index.js';
+import { useState, useEffect } from 'react';
+import Timetable from './components/Timetalbe/index';
+import './index.css';
+import 'antd/dist/antd.css';
+import Loader from './components/Loader/index';
+
+function App() {
+  const [selectedGroup, setSelectedGroup] = useState();
+  const [allGroups, setAllGroups] = useState();
+  const [error, setError] = useState();
+  const [schedule, setShedule] = useState();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadGroups() {
+      try {
+        setLoading(true);
+        const response = await axios.get('https://time.ulstu.ru/api/1.0/groups');
+        setAllGroups(response.data.response);
+      } catch (err) {
+        console.log(err);
+        setError({ message: 'Ошибка', description: 'Не удалось загрузить список групп' });
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadGroups();
+  }, []);
+
+  useEffect(() => {
+    async function loadTimetable() {
+      if (selectedGroup) {
+        try {
+          setLoading(true);
+          setShedule(null);
+          await new Promise((r) => setTimeout(r, 450));
+          const response = await axios.get(`https://time.ulstu.ru/api/1.0/timetable?filter=${selectedGroup}`);
+          setShedule(response.data.response.weeks);
+        } catch (err) {
+          setShedule(null);
+          setError({ message: 'Ошибка', description: 'Не удалось загрузить расписание' });
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+    loadTimetable();
+  }, [selectedGroup]);
+
+  async function searchGroupOptions(value, setOptions) {
+    if (allGroups) {
+      const options = allGroups
+        .filter((group) => group.toLowerCase().includes(value.toLowerCase()))
+        .map((value) => ({ value }));
+      setOptions(options);
+    }
+  }
+
+  return (
+    <div className='app'>
+      <div className='container'>
+        <h1>УлГТУ расписание</h1>
+        <AutocompleteInput
+          placeholder='Введите название группы'
+          notFoundContent='Ничего не найдено'
+          maxOptions='999'
+          onSelect={setSelectedGroup}
+          onSearch={searchGroupOptions}
+          style={{ width: '100%' }}
+        />
+        {loading && <Loader style={{ margin: '40px auto' }} />}
+        {schedule && !error && (
+          <div className='timetable-wrapper'>
+            <h2 style={{ margin: '20px 0' }}>Расписание группы {selectedGroup}</h2>
+            <Timetable style={{ margin: '20px 0' }} schedule={schedule[0].days} title='Неделя 1' />
+            <Timetable style={{ margin: '20px 0' }} schedule={schedule[1].days} title='Неделя 2' />
+          </div>
+        )}
+        {error && (
+          <Alert style={{ margin: '20px 0' }} type='error' message={error.message} description={error.description} />
+        )}
+      </div>
+    </div>
+  );
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
