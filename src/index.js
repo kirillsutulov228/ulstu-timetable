@@ -69,12 +69,18 @@ function App() {
   }, [selectedValue]);
 
   async function searchGroupOptions(value, setOptions) {
-    let options = []
+    const options = []
     if (allGroups) {
-      options = options.concat(findIncludesInArray(value, allGroups));
+      const groupsOptions = findIncludesInArray(value, allGroups);
+      if (groupsOptions.length) {
+        options.push({label: 'Группы', options: findIncludesInArray(value, allGroups)});
+      }
     }
     if (allTeachers) {
-      options = options.concat(findIncludesInArray(value, allTeachers));
+      const teacherOptions = findIncludesInArray(value, allTeachers);
+      if (teacherOptions.length) {
+        options.push({label: 'Преподаватели', options: findIncludesInArray(value, allTeachers)});
+      }
     }
     setOptions(options);
   }
