@@ -1,7 +1,8 @@
+import './index.css';
 import Table from 'antd/lib/table/Table.js';
-import { Fragment } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
-const columns = [
+const initialColumns = [
   {
     title: 'Время',
     dataIndex: 'time',
@@ -40,56 +41,83 @@ const columns = [
   }
 ];
 
-columns.forEach(
-  (col) =>
-    (col.render = (text) => (
-      <div style={{ minWidth: '80px', maxWidth: '200px' }}>
-        {text.split('<br/>').map((v, i) => (
-          <Fragment key={i}>
-            {v}
-            <br />
-          </Fragment>
-        ))}
-      </div>
-    ))
-);
+/* [
+  [h1, m1, h2, m2]
+]
+*/
+const lessonsTimes = [
+  [8, 30, 9, 50],
+  [10, 0, 11, 20],
+  [11, 30, 12, 50],
+  [13, 30, 14, 50],
+  [15, 0, 16, 20],
+  [16, 30, 17, 50],
+  [18, 0, 19, 20],
+  [19, 30, 20, 50]
+];
+
+function dateBetween(date, h1, m1, h2, m2) {
+  const h = date.getHours();
+  const m = date.getMinutes();
+  return (h > h1 || (h === h1 && m >= m1)) && (h < h2 || (h === h2 && m <= m2));
+}
+
+function formatTime(h1, m1) {
+  const date = new Date();
+  date.setHours(h1);
+  date.setMinutes(m1);
+  return date.toLocaleTimeString().substring(0, 5);
+}
 
 export default function Timetable({ schedule, title, ...props }) {
-  const dataSource = [
-    {
-      time: '1-я пара<br/>08:30-09:50',
-      key: 0
-    },
-    {
-      time: '2-я пара<br/>10:00-11:20',
-      key: 1
-    },
-    {
-      time: '3-я пара<br/>11:30-12:50',
-      key: 2
-    },
-    {
-      time: '4-я пара<br/>13:30-14:50',
-      key: 3
-    },
-    {
-      time: '5-я пара<br/>15:00-16:20',
-      key: 4
-    },
-    {
-      time: '6-я пара<br/>16:30-17:50',
-      key: 5
-    },
-    {
-      time: '7-я пара<br/>18:00-19:20',
-      key: 6
-    },
-    {
-      time: '8-я пара<br/>19:30-20:50',
-      key: 7
-    }
-  ];
+  const [columns, setColumns] = useState(initialColumns);
 
+  const dataSource = lessonsTimes.map((v, i) => ({
+    time: `${formatTime(v[0], v[1])}-${formatTime(v[2], v[3])}<br/>${i + 1}-я пара`,
+    key: i
+  }));
+
+  useEffect(() => {
+    function updateBg() {
+      const newColumns = JSON.parse(JSON.stringify(initialColumns));
+      newColumns.forEach((col, i) => {
+        const date = new Date();
+        const timeOffset = -240
+        date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000);
+        col.onCell = (_, rowIndex) => {
+          let isCurrentDay = col.dataIndex === 'day' + date.getDay();
+          let isCurrentLesson =
+            isCurrentDay &&
+            dateBetween(
+              date,
+              lessonsTimes[rowIndex][0],
+              lessonsTimes[rowIndex][1],
+              lessonsTimes[rowIndex][2],
+              lessonsTimes[rowIndex][3]
+            );
+          return {
+            className: isCurrentLesson ? 'current' : isCurrentDay ? 'today' : undefined
+          };
+        };
+        col.render = (text) => (
+          <div style={{ minWidth: '80px', maxWidth: '200px' }}>
+            {text.split('<br/>').map((v, i) => (
+              <Fragment key={i}>
+                {v}
+                <br />
+              </Fragment>
+            ))}
+          </div>
+        );
+      });
+      setColumns(newColumns);
+    }
+    updateBg();
+    const interval = setInterval(updateBg, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+ 
   schedule.forEach((day, dayIndex) => {
     day.lessons.forEach((lesson, lessonIndex) => {
       dataSource[lessonIndex]['day' + dayIndex] =
@@ -101,8 +129,6 @@ export default function Timetable({ schedule, title, ...props }) {
     });
   });
 
-  console.log({ schedule, dataSource });
-
   return (
     <Table
       size='small'
@@ -113,6 +139,7 @@ export default function Timetable({ schedule, title, ...props }) {
       columns={columns}
       dataSource={dataSource}
       bordered
+      className='timetable'
       {...props}
     />
   );

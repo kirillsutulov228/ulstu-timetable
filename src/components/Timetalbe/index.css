@@ -1,0 +1,9 @@
+.timetable tbody {
+  pointer-events: none;
+}
+.timetable .current {
+  background: rgb(224, 224, 224);
+}
+.timetable .today {
+  background: rgb(245, 245, 245);
+}
