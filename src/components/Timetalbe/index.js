@@ -116,7 +116,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
     updateBg();
     const interval = setInterval(updateBg, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [showBg]);
 
  
   schedule.forEach((day, dayIndex) => {
