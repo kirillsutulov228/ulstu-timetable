@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AutoComplete, Input } from 'antd';
 
-export default function AutocompleteInput({ onSelect, onSearch, placeholder, notFoundContent, enterButton, style, maxOptions = 5 }) {
+export default function AutocompleteInput({ onSelect, defaultValue, onSearch, placeholder, notFoundContent, enterButton, style, maxOptions = 5 }) {
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState('');
 
@@ -22,6 +22,7 @@ export default function AutocompleteInput({ onSelect, onSearch, placeholder, not
       onSelect={selectHandler}
       onSearch={searchHandler}
       notFoundContent={value && notFoundContent}
+      defaultValue={defaultValue}
     >
       <Input.Search placeholder={placeholder} enterButton={enterButton} />
     </AutoComplete>

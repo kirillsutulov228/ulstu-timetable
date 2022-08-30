@@ -9,6 +9,7 @@ import Timetable from './components/Timetalbe/index';
 import './index.css';
 import 'antd/dist/antd.css';
 import Loader from './components/Loader/index';
+import { Switch } from 'antd';
 
 function getSheduleWeek(date = new Date()) {
   const firstJanuary = new Date(date.getFullYear(), 0, 1);
@@ -22,14 +23,15 @@ function findIncludesInArray(value, arr) {
 }
 
 function App() {
-  const [selectedValue, setselectedValue] = useState();
+  const [selectedValue, setSelectedValue] = useState(localStorage.getItem('selectedValue') || '');
+  const [saveSelect, setSaveSelect] = useState(localStorage.getItem('saveSelect') || false);
   const [allGroups, setAllGroups] = useState();
   const [allTeachers, setAllTeachers] = useState();
   const [error, setError] = useState();
   const [schedule, setShedule] = useState();
   const [loading, setLoading] = useState(false);
   const [week, setWeek] = useState(getSheduleWeek());
-
+ 
   useEffect(() => {
     async function loadGroups() {
       try {
@@ -69,22 +71,32 @@ function App() {
   }, [selectedValue]);
 
   async function searchGroupOptions(value, setOptions) {
-    const options = []
+    const options = [];
     if (allGroups) {
       const groupsOptions = findIncludesInArray(value, allGroups);
       if (groupsOptions.length) {
-        options.push({label: 'Группы', options: findIncludesInArray(value, allGroups)});
+        options.push({ label: 'Группы', options: findIncludesInArray(value, allGroups) });
       }
     }
     if (allTeachers) {
       const teacherOptions = findIncludesInArray(value, allTeachers);
       if (teacherOptions.length) {
-        options.push({label: 'Преподаватели', options: findIncludesInArray(value, allTeachers)});
+        options.push({ label: 'Преподаватели', options: findIncludesInArray(value, allTeachers) });
       }
     }
     setOptions(options);
   }
 
+  useEffect(() => {
+    if (!saveSelect) {
+      localStorage.removeItem('selectedValue');
+      localStorage.removeItem('saveSelect');
+      return;
+    }
+    localStorage.setItem('selectedValue', selectedValue);
+    localStorage.setItem('saveSelect', saveSelect);
+  }, [selectedValue, saveSelect]);
+  console.log({ selectedValue, saveSelect });
   return (
     <div className='app'>
       <div className='container'>
@@ -96,19 +108,19 @@ function App() {
           placeholder='Введите название группы или имя преподавтеля'
           notFoundContent='Ничего не найдено'
           maxOptions='999'
-          onSelect={setselectedValue}
+          defaultValue={selectedValue || ''}
+          onSelect={setSelectedValue}
           onSearch={searchGroupOptions}
           style={{ width: '100%' }}
         />
+        <div style={{ margin: '20px 0' }}>
+          Запомнить выбор <Switch style={{ margin: '0 5px' }} defaultChecked={saveSelect} onChange={setSaveSelect}/>
+        </div>
+
         {loading && <Loader style={{ margin: '40px auto' }} />}
         {schedule && !error && (
           <div className='timetable-wrapper'>
-            <Timetable
-              style={{ margin: '40px 0' }}
-              showBg={week === 1}
-              schedule={schedule[0].days}
-              title='Неделя 1'
-            />
+            <Timetable style={{ margin: '40px 0' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
             <Timetable style={{ margin: '50px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
           </div>
         )}

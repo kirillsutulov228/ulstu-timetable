@@ -14,7 +14,7 @@ code {
 
 .app {
   padding: 20px;
-  min-width: 320px;
+  min-width: 360px;
 }
 .container {
   max-width: 1200px;
@@ -25,6 +25,7 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  padding-right: 10px;
 }
 .title > span {
   font-size: 0.5em;
