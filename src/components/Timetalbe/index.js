@@ -18,7 +18,6 @@ const _initialColumns = [
     title: '',
     dataIndex: 'day',
     key: 'day',
-    fixed: 'left'
   }
 ];
 
@@ -92,9 +91,8 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
           <div
             style={{
               whiteSpace: 'pre-line',
-              wordBreak: "break-word",
-              minWidth: '100px',
-              maxWidth: '180px',
+              minWidth: '70px',
+              maxWidth: '120px',
               fontWeight: colIndex === 0 ? '500' : '400',
             }}
           >
