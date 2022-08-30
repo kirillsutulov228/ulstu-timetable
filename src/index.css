@@ -30,4 +30,5 @@ code {
 .title > span {
   font-size: 0.5em;
   font-weight: normal;
+  text-align: right;
 }

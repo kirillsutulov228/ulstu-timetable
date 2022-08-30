@@ -102,7 +102,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
         };
         col.render = (text) => (
           <div
-            style={{ whiteSpace: 'pre-line', minWidth: '80px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}
+            style={{ whiteSpace: 'pre-line', minWidth: '110px', maxWidth: '200px', fontWeight: i === 0 ? '500' : '400' }}
           >
             {text}
           </div>
@@ -130,7 +130,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       scroll={{ x: true }}
       pagination={false}
       sticky
-      title={() => <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{title}</h3>}
+      title={() => <h3 style={{ margin: 0,  whiteSpace: 'nowrap' }}>{title}</h3>}
       columns={columns}
       dataSource={dataSource}
       bordered

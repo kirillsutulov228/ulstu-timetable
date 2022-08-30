@@ -7,6 +7,6 @@
 .timetable .today {
   background: rgb(245, 245, 245);
 }
-.timetable thead[class*="ant-table-thead"] th{
-  white-space: nowrap;
+.timetable thead th.ant-table-cell {
+  white-space: nowrap !important;
 }
