@@ -7,7 +7,7 @@ const initialColumns = [
     title: '',
     dataIndex: 'time',
     key: 'time',
-    fixed: 'left'
+    fixed: 'left',
   },
   {
     title: 'Понедельник',
