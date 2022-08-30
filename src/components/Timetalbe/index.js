@@ -1,6 +1,6 @@
 import './index.css';
 import Table from 'antd/lib/table/Table.js';
-import { Fragment, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const initialColumns = [
   {
@@ -130,7 +130,7 @@ export default function Timetable({ schedule, title, showBg, ...props }) {
       scroll={{ x: true }}
       pagination={false}
       sticky
-      title={() => <h3 style={{ margin: 0 }}>{title}</h3>}
+      title={() => <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{title}</h3>}
       columns={columns}
       dataSource={dataSource}
       bordered
