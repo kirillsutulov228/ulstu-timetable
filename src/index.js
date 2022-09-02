@@ -9,7 +9,8 @@ import Timetable from './components/Timetalbe/index';
 import './index.css';
 import 'antd/dist/antd.css';
 import Loader from './components/Loader/index';
-import { Switch } from 'antd';
+import { Button, Switch } from 'antd';
+import ListSchedule from './components/ListSchedule/index';
 
 function getSheduleWeek(date = new Date()) {
   const firstJanuary = new Date(date.getFullYear(), 0, 1);
@@ -19,7 +20,9 @@ function getSheduleWeek(date = new Date()) {
 }
 
 function findIncludesInArray(value, arr) {
-  return arr.filter((group) => group.toLowerCase().trim().includes(value.toLowerCase().trim())).map((value) => ({ value }));
+  return arr
+    .filter((group) => group.toLowerCase().trim().includes(value.toLowerCase().trim()))
+    .map((value) => ({ value }));
 }
 
 function App() {
@@ -31,7 +34,8 @@ function App() {
   const [schedule, setShedule] = useState();
   const [loading, setLoading] = useState(false);
   const [week, setWeek] = useState(getSheduleWeek());
- 
+  const [showType, setShowType] = useState(localStorage.getItem('showType') || 'table');
+
   useEffect(() => {
     async function loadGroups() {
       try {
@@ -97,6 +101,12 @@ function App() {
     localStorage.setItem('saveSelect', saveSelect);
   }, [selectedValue, saveSelect]);
 
+  function changeShowType(event) {
+    const newType = showType === 'table' ? 'list' : 'table';
+    localStorage.setItem('showType', newType);
+    setShowType(newType);
+  }
+
   return (
     <div className='app'>
       <div className='container'>
@@ -114,14 +124,35 @@ function App() {
           style={{ width: '100%' }}
         />
         <div style={{ margin: '20px 0' }}>
-          Запомнить выбор <Switch style={{ margin: '0 5px' }} defaultChecked={saveSelect} onChange={setSaveSelect}/>
+          Запомнить выбор <Switch style={{ margin: '0 5px' }} defaultChecked={saveSelect} onChange={setSaveSelect} />
         </div>
-
+        {schedule && !error && (
+          <Button onClick={changeShowType}>Режим отображения: {showType === 'table' ? 'таблица' : 'список'}</Button>
+        )}
         {loading && <Loader style={{ margin: '40px auto' }} />}
         {schedule && !error && (
           <div className='timetable-wrapper'>
-            <Timetable style={{ margin: '40px 0' }} showBg={week === 1} schedule={schedule[0].days} title='Неделя 1' />
-            <Timetable style={{ margin: '50px 0' }} showBg={week === 2} schedule={schedule[1].days} title='Неделя 2' />
+            {showType === 'table' ? (
+              <>
+                <Timetable
+                  style={{ margin: '20px 0' }}
+                  showBg={week === 1}
+                  schedule={schedule[0].days}
+                  title='Неделя 1'
+                />
+                <Timetable
+                  style={{ margin: '50px 0' }}
+                  showBg={week === 2}
+                  schedule={schedule[1].days}
+                  title='Неделя 2'
+                />
+              </>
+            ) : (
+              <>
+                <ListSchedule showBg={week === 1} title='Неделя 1' style={{ margin: '20px 0' }} schedule={schedule[0].days}></ListSchedule>
+                <ListSchedule showBg={week === 2} title='Неделя 2' style={{ margin: '50px 0' }} schedule={schedule[1].days}></ListSchedule>
+              </>
+            )}
           </div>
         )}
         {error && (
