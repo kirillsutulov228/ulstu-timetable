@@ -32,3 +32,6 @@ code {
   font-weight: normal;
   text-align: right;
 }
+.timetable-wrapper * {
+  transition: none !important;
+}

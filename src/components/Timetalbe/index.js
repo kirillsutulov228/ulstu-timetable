@@ -1,17 +1,7 @@
 import './index.css';
 import Table from 'antd/lib/table/Table.js';
 import { useState, useEffect } from 'react';
-
-const lessonsTimes = [
-  [8, 30, 9, 50],
-  [10, 0, 11, 20],
-  [11, 30, 12, 50],
-  [13, 30, 14, 50],
-  [15, 0, 16, 20],
-  [16, 30, 17, 50],
-  [18, 0, 19, 20],
-  [19, 30, 20, 50]
-];
+import { lessonsTimes, dateBetween, formatTime } from '../../utils.js';
 
 const _initialColumns = [
   {
@@ -28,19 +18,6 @@ lessonsTimes.forEach((v, i) =>
     key: `lesson${i}`
   })
 );
-
-function dateBetween(date, h1, m1, h2, m2) {
-  const h = date.getHours();
-  const m = date.getMinutes();
-  return (h > h1 || (h === h1 && m >= m1)) && (h < h2 || (h === h2 && m <= m2));
-}
-
-function formatTime(h1, m1) {
-  const date = new Date();
-  date.setHours(h1);
-  date.setMinutes(m1);
-  return date.toLocaleTimeString().substring(0, 5);
-}
 
 export default function Timetable({ schedule, title, showBg, ...props }) {
   const [columns, setColumns] = useState(_initialColumns);

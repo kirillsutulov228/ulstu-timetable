@@ -11,21 +11,11 @@ import 'antd/dist/antd.css';
 import Loader from './components/Loader/index';
 import { Button, Switch } from 'antd';
 import ListSchedule from './components/ListSchedule/index';
-
-function getSheduleWeek(date = new Date()) {
-  const firstJanuary = new Date(date.getFullYear(), 0, 1);
-  const dayNr = Math.ceil((date - firstJanuary) / (24 * 60 * 60 * 1000));
-  const weekNr = Math.ceil((dayNr + firstJanuary.getDay()) / 7);
-  return weekNr % 2 ? 2 : 1;
-}
-
-function findIncludesInArray(value, arr) {
-  return arr
-    .filter((group) => group.toLowerCase().trim().includes(value.toLowerCase().trim()))
-    .map((value) => ({ value }));
-}
+import { getScheduleWeek, findIncludesInArray } from './utils.js';
 
 function App() {
+  const currentWeek = getScheduleWeek();
+
   const [selectedValue, setSelectedValue] = useState(localStorage.getItem('selectedValue') || '');
   const [saveSelect, setSaveSelect] = useState(localStorage.getItem('saveSelect') || false);
   const [allGroups, setAllGroups] = useState();
@@ -33,7 +23,7 @@ function App() {
   const [error, setError] = useState();
   const [schedule, setShedule] = useState();
   const [loading, setLoading] = useState(false);
-  const [week, setWeek] = useState(getSheduleWeek());
+  const [week, setWeek] = useState(currentWeek);
   const [showType, setShowType] = useState(localStorage.getItem('showType') || 'table');
 
   useEffect(() => {
@@ -113,7 +103,7 @@ function App() {
       <div className='container'>
         <h1 className='title'>
           Расписание УлГТУ
-          <span>Сейчас {week}-ая неделя</span>
+          <span>Сейчас {currentWeek}-ая неделя</span>
         </h1>
         <AutocompleteInput
           placeholder='Введите название группы или имя преподавтеля'
@@ -133,25 +123,35 @@ function App() {
         {loading && <Loader style={{ margin: '40px auto' }} />}
         {schedule && !error && (
           <div className='timetable-wrapper'>
+            <div style={{ margin: '20px 0' }}>
+              <Button
+                type={week === 1 ? 'primary' : 'default'}
+                style={{ marginRight: '10px' }}
+                onClick={(e) => {e.currentTarget.blur(); setWeek(1)}}
+              >
+                Неделя 1
+              </Button>
+              <Button type={week === 2 ? 'primary' : 'default'} onClick={(e) => {e.currentTarget.blur(); setWeek(2)}}>
+                Неделя 2
+              </Button>
+            </div>
             {showType === 'table' ? (
               <>
                 <Timetable
                   style={{ margin: '20px 0' }}
-                  showBg={week === 1}
-                  schedule={schedule[0].days}
-                  title='Неделя 1'
-                />
-                <Timetable
-                  style={{ margin: '50px 0' }}
-                  showBg={week === 2}
-                  schedule={schedule[1].days}
-                  title='Неделя 2'
+                  showBg={week === currentWeek}
+                  schedule={schedule[week - 1].days}
+                  title={`Неделя ${week}`}
                 />
               </>
             ) : (
               <>
-                <ListSchedule showBg={week === 1} title='Неделя 1' style={{ margin: '20px 0' }} schedule={schedule[0].days}></ListSchedule>
-                <ListSchedule showBg={week === 2} title='Неделя 2' style={{ margin: '50px 0' }} schedule={schedule[1].days}></ListSchedule>
+                <ListSchedule
+                  showBg={week === currentWeek}
+                  title={`Неделя ${week}`}
+                  style={{ margin: '20px 0' }}
+                  schedule={schedule[week - 1].days}
+                ></ListSchedule>
               </>
             )}
           </div>
