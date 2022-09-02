@@ -58,6 +58,7 @@ function App() {
     async function loadTimetable() {
       if (selectedValue) {
         try {
+          setError(false);
           setLoading(true);
           setShedule(null);
           await new Promise((r) => setTimeout(r, 450));
