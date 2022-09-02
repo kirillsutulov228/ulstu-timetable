@@ -93,6 +93,7 @@ function App() {
   }, [selectedValue, saveSelect]);
 
   function changeShowType(event) {
+    event.currentTarget.blur();
     const newType = showType === 'table' ? 'list' : 'table';
     localStorage.setItem('showType', newType);
     setShowType(newType);
