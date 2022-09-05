@@ -8,11 +8,11 @@ function DayScheduleItem({ showBg, date, daySchedule, dayIndex }) {
   const timeOffset = -240;
   const isEmpty = daySchedule.flat().length === 0;
   const isCurrentDay = date.getDay() === dayIndex + 1;
-  date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000);
-
+  date.setTime(date.getTime() + (date.getTimezoneOffset() - timeOffset) * 60000); 
+  
   return (
     <List
-      style={{ margin: '10px 5px', background: showBg && isCurrentDay ? 'rgb(247, 247, 247)' : null }}
+      style={{ margin: '15px 5px', background: showBg && isCurrentDay ? 'rgb(245, 245, 245)' : null }}
       dataSource={daySchedule}
       header={<h3 style={{ position: 'sticky', margin: '5px 0' }}>{dayNames[dayIndex]}</h3>}
       bordered
@@ -20,7 +20,6 @@ function DayScheduleItem({ showBg, date, daySchedule, dayIndex }) {
         return lesson.length ? (
           <List.Item
             style={{
-              marginLeft: '5px',
               background:
                 showBg &&
                 isCurrentDay &&
@@ -29,11 +28,11 @@ function DayScheduleItem({ showBg, date, daySchedule, dayIndex }) {
                   lessonsTimes[i][0],
                   lessonsTimes[i][1],
                   lessonsTimes[i][2],
-                  lessonsTimes[i][3] ? 'rgb(242, 242, 242)' : null
-                )
+                  lessonsTimes[i][3] 
+                ) ? 'rgb(224, 224, 224)' : null
             }}
           >
-            <div style={{ whiteSpace: 'pre-line' }}>
+            <div style={{ whiteSpace: 'pre-line', marginLeft: '5px' }}>
               <h4>
                 {i + 1} пара {'\n'} {formatTime(lessonsTimes[i][0], lessonsTimes[i][1])}-
                 {formatTime(lessonsTimes[i][2], lessonsTimes[i][3])}
@@ -64,7 +63,7 @@ export default function ListSchedule({ showBg, schedule, title, style }) {
     }, 60000);
     return () => clearInterval(interval);
   });
-  
+
   return (
     <List
       bordered={true}
