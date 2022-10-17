@@ -130,7 +130,7 @@ function App() {
           <Button onClick={changeShowType}>Режим отображения: {showType === 'table' ? 'таблица' : 'список'}</Button>
         )}
         {loading && <Loader style={{ margin: '40px auto' }} />}
-        {schedule && !error && (
+        {schedule && weeks && !error && (
           <div className='timetable-wrapper'>
             <div style={{ margin: '20px 0' }}>
               <Button
