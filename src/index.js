@@ -111,7 +111,7 @@ function App() {
     <div className='app'>
       <div className='container'>
         <h1 className='title'>
-          Расписание УлГТУ
+          <p>Расписание УлГТУ</p>
           {currentWeek !== null && <span>Сейчас {currentWeek}-ая неделя</span>}
         </h1>
         <AutocompleteInput

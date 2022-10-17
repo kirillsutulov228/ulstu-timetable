@@ -25,9 +25,19 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-right: 10px;
+  white-space: pre-line;
+}
+.title > p {
+  display: block;
+  margin: 0 20px 0 0;
+}
+@media screen and (max-width: 500px) {
+  .title > p {
+    width: min-content;
+  }
 }
 .title > span {
+  white-space: initial;
   font-size: 0.5em;
   font-weight: normal;
   text-align: right;
