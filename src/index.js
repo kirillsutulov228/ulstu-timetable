@@ -14,7 +14,6 @@ import ListSchedule from './components/ListSchedule/index';
 import { getScheduleWeek, findIncludesInArray } from './utils.js';
 
 function App() {
-
   const [selectedValue, setSelectedValue] = useState(localStorage.getItem('selectedValue') || '');
   const [saveSelect, setSaveSelect] = useState(localStorage.getItem('saveSelect') || false);
   const [allGroups, setAllGroups] = useState();
@@ -34,13 +33,19 @@ function App() {
         const scheduleWeek = getScheduleWeek();
         const groupResponse = await axios.get('https://time.ulstu.ru/api/1.0/groups');
         const teachersResponse = await axios.get('https://time.ulstu.ru/api/1.0/teachers');
-        const randSheduleRespose = await axios.get(`https://time.ulstu.ru/api/1.0/timetable?filter=${groupResponse.data.response[0]}`)
-        const weeks = Object.keys(randSheduleRespose.data.response.weeks).map(v => +v + 1)
+        const randSheduleRespose = await axios.get(
+          `https://time.ulstu.ru/api/1.0/timetable?filter=${groupResponse.data.response[0]}`
+        );
+        const weeks = Object.keys(randSheduleRespose.data.response.weeks).map((v) => +v + 1);
+        let week = weeks[0];
+        if (weeks.length === 2) {
+          week = ((scheduleWeek % 2) === (weeks[0] % 2)) ? week[0] : week[1];
+        }
         setAllGroups(groupResponse.data.response);
         setAllTeachers(teachersResponse.data.response);
         setWeeks(weeks);
-        setCurrentWeek(scheduleWeek === 1 ? weeks[0] : weeks[1]);
-        setWeek(scheduleWeek === 1 ? weeks[0] : weeks[1]);
+        setCurrentWeek(week);
+        setWeek(week);
       } catch (err) {
         console.log(err);
         setError({ message: 'Ошибка', description: 'Не удалось загрузить список групп' });
@@ -133,16 +138,19 @@ function App() {
         {schedule && weeks && !error && (
           <div className='timetable-wrapper'>
             <div style={{ margin: '20px 0' }}>
-              <Button
-                type={week === weeks[0] ? 'primary' : 'default'}
-                style={{ marginRight: '10px' }}
-                onClick={(e) => {e.currentTarget.blur(); setWeek(weeks[0])}}
-              >
-                Неделя {weeks[0]}
-              </Button>
-              <Button type={week === weeks[1] ? 'primary' : 'default'} onClick={(e) => {e.currentTarget.blur(); setWeek(weeks[1])}}>
-                Неделя {weeks[1]}
-              </Button>
+              {weeks.map((weekItem, i) => (
+                <Button
+                  key={"week-button" + i}
+                  type={week === weekItem ? 'primary' : 'default'}
+                  style={{ marginRight: '10px' }}
+                  onClick={(e) => {
+                    e.currentTarget.blur();
+                    setWeek(weekItem);
+                  }}
+                >
+                  Неделя {weekItem}
+                </Button>
+              ))}
             </div>
             {showType === 'table' ? (
               <>
