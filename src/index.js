@@ -37,9 +37,9 @@ function App() {
           `https://time.ulstu.ru/api/1.0/timetable?filter=${groupResponse.data.response[0]}`
         );
         const weeks = Object.keys(randSheduleRespose.data.response.weeks).map((v) => +v + 1);
-        let week = weeks[0];
+        let week = weeks[0] ?? null;
         if (weeks.length === 2) {
-          week = ((scheduleWeek % 2) === (weeks[0] % 2)) ? week[0] : week[1];
+          week = ((scheduleWeek % 2) === (weeks[0] % 2)) ? weeks[0] : weeks[1];
         }
         setAllGroups(groupResponse.data.response);
         setAllTeachers(teachersResponse.data.response);
