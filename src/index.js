@@ -20,7 +20,7 @@ function App() {
   const [allTeachers, setAllTeachers] = useState();
   const [error, setError] = useState();
   const [schedule, setShedule] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(0);
   const [week, setWeek] = useState(null);
   const [weeks, setWeeks] = useState(null);
   const [currentWeek, setCurrentWeek] = useState(null);
@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     async function loadGroups() {
       try {
-        setLoading(true);
+        setLoading((v) => v + 1);
         const scheduleWeek = getScheduleWeek();
         const groupResponse = await axios.get('https://time.ulstu.ru/api/1.0/groups');
         const teachersResponse = await axios.get('https://time.ulstu.ru/api/1.0/teachers');
@@ -39,7 +39,7 @@ function App() {
         const weeks = Object.keys(randSheduleRespose.data.response.weeks).map((v) => +v + 1);
         let week = weeks[0] ?? null;
         if (weeks.length === 2) {
-          week = ((scheduleWeek % 2) === (weeks[0] % 2)) ? weeks[0] : weeks[1];
+          week = scheduleWeek % 2 === weeks[0] % 2 ? weeks[0] : weeks[1];
         }
         setAllGroups(groupResponse.data.response);
         setAllTeachers(teachersResponse.data.response);
@@ -50,7 +50,7 @@ function App() {
         console.log(err);
         setError({ message: 'Ошибка', description: 'Не удалось загрузить список групп' });
       } finally {
-        setLoading(false);
+        setLoading((v) => v - 1);
       }
     }
     loadGroups();
@@ -61,7 +61,7 @@ function App() {
       if (selectedValue) {
         try {
           setError(false);
-          setLoading(true);
+          setLoading((v) => v + 1);
           setShedule(null);
           await new Promise((r) => setTimeout(r, 450));
           const response = await axios.get(`https://time.ulstu.ru/api/1.0/timetable?filter=${selectedValue}`);
@@ -71,7 +71,7 @@ function App() {
           setShedule(null);
           setError({ message: 'Ошибка', description: 'Не удалось загрузить расписание' });
         } finally {
-          setLoading(false);
+          setLoading((v) => v - 1);
         }
       }
     }
@@ -117,7 +117,7 @@ function App() {
       <div className='container'>
         <h1 className='title'>
           <p>Расписание УлГТУ</p>
-          {currentWeek !== null && <span>Сейчас {currentWeek}-ая неделя</span>}
+          {!loading && currentWeek !== null && <span>Сейчас {currentWeek}-ая неделя</span>}
         </h1>
         <AutocompleteInput
           placeholder='Введите название группы или имя преподавтеля'
@@ -131,47 +131,47 @@ function App() {
         <div style={{ margin: '20px 0' }}>
           Запомнить выбор <Switch style={{ margin: '0 5px' }} defaultChecked={saveSelect} onChange={setSaveSelect} />
         </div>
-        {schedule && !error && (
-          <Button onClick={changeShowType}>Режим отображения: {showType === 'table' ? 'таблица' : 'список'}</Button>
-        )}
-        {loading && <Loader style={{ margin: '40px auto' }} />}
-        {schedule && weeks && !error && (
-          <div className='timetable-wrapper'>
-            <div style={{ margin: '20px 0' }}>
-              {weeks.map((weekItem, i) => (
-                <Button
-                  key={"week-button" + i}
-                  type={week === weekItem ? 'primary' : 'default'}
-                  style={{ marginRight: '10px' }}
-                  onClick={(e) => {
-                    e.currentTarget.blur();
-                    setWeek(weekItem);
-                  }}
-                >
-                  Неделя {weekItem}
-                </Button>
-              ))}
+        {loading > 0 && <Loader style={{ margin: '40px auto' }} />}
+        {!loading && schedule && weeks && !error && (
+          <>
+            <Button onClick={changeShowType}>Режим отображения: {showType === 'table' ? 'таблица' : 'список'}</Button>
+            <div className='timetable-wrapper'>
+              <div style={{ margin: '20px 0' }}>
+                {weeks.map((weekItem, i) => (
+                  <Button
+                    key={'week-button' + i}
+                    type={week === weekItem ? 'primary' : 'default'}
+                    style={{ marginRight: '10px' }}
+                    onClick={(e) => {
+                      e.currentTarget.blur();
+                      setWeek(weekItem);
+                    }}
+                  >
+                    Неделя {weekItem}
+                  </Button>
+                ))}
+              </div>
+              {showType === 'table' ? (
+                <>
+                  <Timetable
+                    style={{ margin: '20px 0' }}
+                    showBg={week === currentWeek}
+                    schedule={schedule[week - 1].days}
+                    title={`Неделя ${week}`}
+                  />
+                </>
+              ) : (
+                <>
+                  <ListSchedule
+                    showBg={week === currentWeek}
+                    title={`Неделя ${week}`}
+                    style={{ margin: '20px 0' }}
+                    schedule={schedule[week - 1].days}
+                  ></ListSchedule>
+                </>
+              )}
             </div>
-            {showType === 'table' ? (
-              <>
-                <Timetable
-                  style={{ margin: '20px 0' }}
-                  showBg={week === currentWeek}
-                  schedule={schedule[week - 1].days}
-                  title={`Неделя ${week}`}
-                />
-              </>
-            ) : (
-              <>
-                <ListSchedule
-                  showBg={week === currentWeek}
-                  title={`Неделя ${week}`}
-                  style={{ margin: '20px 0' }}
-                  schedule={schedule[week - 1].days}
-                ></ListSchedule>
-              </>
-            )}
-          </div>
+          </>
         )}
         {error && (
           <Alert style={{ margin: '20px 0' }} type='error' message={error.message} description={error.description} />
