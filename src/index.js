@@ -111,7 +111,6 @@ function App() {
     localStorage.setItem('showType', newType);
     setShowType(newType);
   }
-
   return (
     <div className='app'>
       <div className='container'>
@@ -156,7 +155,7 @@ function App() {
                   <Timetable
                     style={{ margin: '20px 0' }}
                     showBg={week === currentWeek}
-                    schedule={schedule[week - 1].days}
+                    schedule={schedule[week].days}
                     title={`Неделя ${week}`}
                   />
                 </>
@@ -166,7 +165,7 @@ function App() {
                     showBg={week === currentWeek}
                     title={`Неделя ${week}`}
                     style={{ margin: '20px 0' }}
-                    schedule={schedule[week - 1].days}
+                    schedule={schedule[week].days}
                   ></ListSchedule>
                 </>
               )}
