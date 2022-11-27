@@ -36,7 +36,7 @@ function App() {
         const randSheduleRespose = await axios.get(
           `https://time.ulstu.ru/api/1.0/timetable?filter=${groupResponse.data.response[0]}`
         );
-        const weeks = Object.keys(randSheduleRespose.data.response.weeks).map((v) => +v);
+        const weeks = Object.keys(randSheduleRespose.data.response.weeks).map((v) => +v + 1);
         let week = weeks[0] ?? null;
         if (weeks.length === 2) {
           week = scheduleWeek % 2 === weeks[0] % 2 ? weeks[0] : weeks[1];
@@ -155,7 +155,7 @@ function App() {
                   <Timetable
                     style={{ margin: '20px 0' }}
                     showBg={week === currentWeek}
-                    schedule={schedule[week].days}
+                    schedule={schedule[week - 1].days}
                     title={`Неделя ${week}`}
                   />
                 </>
@@ -165,7 +165,7 @@ function App() {
                     showBg={week === currentWeek}
                     title={`Неделя ${week}`}
                     style={{ margin: '20px 0' }}
-                    schedule={schedule[week].days}
+                    schedule={schedule[week - 1].days}
                   ></ListSchedule>
                 </>
               )}
