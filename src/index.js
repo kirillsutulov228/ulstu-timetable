@@ -130,7 +130,7 @@ function App() {
         <div style={{ margin: '20px 0' }}>
           Запомнить выбор <Switch style={{ margin: '0 5px' }} defaultChecked={saveSelect} onChange={setSaveSelect} />
         </div>
-        {loading > 0 && <Loader style={{ margin: '40px auto' }} />}
+        {loading > 0 && !error && <Loader style={{ margin: '40px auto' }} />}
         {!loading && schedule && weeks && !error && (
           <>
             <Button onClick={changeShowType}>Режим отображения: {showType === 'table' ? 'таблица' : 'список'}</Button>
